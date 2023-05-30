@@ -2,230 +2,235 @@ rows=$(tput lines)
 cols=$(tput cols)
 player_row=$((rows/2))
 player_col=$((cols/2))
-target_row=$((RANDOM % rows))
-target_col=$((RANDOM % cols))
-attacker_row=$((RANDOM % cols))
-attacker_col=$((RANDOM % cols))
-dir_row=5
-dir_cow=5
-score=0
+enemy_row=$((RANDOM % rows))
+enemy_col=$((RANDOM % cols))
+bullet_rơw=$player_row
+bullet_col=$player_col
 red="\033[33;31m"
 green="\033[33;32m"
 yellow="\033[33;33m"
 white="\033[33;39m"
-bullet_row=$player_row
-bullet_col=$player_col
+db_row=$((RANDOM % rows))
+db_col=$((RANDOM % cols))
+dir_row=5
+dir_col=5
 kill=0
-x=( [0]="7 10" [1]="12 25" [2]="15 35" [3]="18 15" [4]="5 30" )
+hp=3
+hp_row=$((RANDOM % rows))
+hp_col=$((RANDOM % cols))
+
+
+function last() {
 tput civis
-  
-function 1877_game() {
 clear
 tput cup $player_row $player_col
-echo -e "$green Bạn > (@) "
-tput cup $target_row $target_col
-echo -e "$yellow Mục Tiêu > (***)"
-tput cup $attacker_row $attacker_col
-echo -e "$red Kẻ Bắt Cóc > (o)"
-
-for i in "${!x[@]}"
-do
-    obstacle=(${x[$i]})
-    tput cup ${x[0]} ${x[1]}
-    echo "#"
-done
-
-  while true; do
-  read -s -n 1 move
-  
-  case $move in
-  "b") break ;;
-  
-  "w") ((player_row--)) ;;
-  "s") ((player_row++)) ;;
-  "a") ((player_col--)) ;;
-  "d") ((player_col++)) ;;
-  " ") bullet_row=$player_row
-       bullet_col=$player_cow ;;
+echo -e "$green YOU > /(~_~)-|"
+tput cup $enemy_row $enemy_col
+echo -e "$yellow ATTACKER > /('_')-|"
+  for i in {1..5}
+     do
+db_row=$((RANDOM % rows))
+db_col=$((RANDOM % cols))
+		 tput cup $db_row $db_col
+         echo -e "$red Quả Bom > (')"
+	done
+		 while true;do
+     read -s -n 1 key
+	 case $key in
+	 "b") break ;;
+	 "w") ((player_row--)) ;;
+	 "s") ((player_row++)) ;;
+	 "a") ((player_col--)) ;;
+	 "d") ((player_col++)) ;;
+	 
+	 "u")
+         if [ $player_row -eq $enemy_row ] && [ $player_col -eq $enemy_col ]
+		 then
+		 tput cup $enemy_row $enemy_col
+		echo "(@_@) > choáng"
+		 sleep 0.40
+ 	 kill=$((kill+1))
+			enemy_row=$((RANDOM % rows))
+			enemy_col=$((RANDOM % cols))
+		fi ;;
+		
+	 " ") bullet_row=$player_row
+	      Bullet_col=$player_col
+		  
+		  while [ $bullet_row -gt 0 ]
+		  do 
+		    tput cup $bullet_row $bullet_col
+			echo "|"
+			sleep 0.01
+			tput cup $bullet_row $bullet_col
+			echo " "
+			
+			((bullet_row--))
+			if [ $bullet_row -eq $enemy_row ] && [ $bullet_col -eq $enemy_col ]
+	   then
+	       echo "(@_@) > choáng"
+		 sleep 0.40
+ 	        kill=$((kill+1))
+			db_row=$((RANDOM % rows))
+            db_col=$((RANDOM % cols))
+			enemy_row=$((RANDOM % rows))
+			enemy_col=$((RANDOM % cols))
+		fi
+		   done
+	      ;;
+		  
+	 *) ;;
+	 esac
+	 
+	 if [ $bullet_col -ne $player_col ]
+	 then
+	     ((bullet_col--))
+	 fi
+	 
+	 tput cup $bullet_row $bullet_col
+		 echo "-"
+		 
+	   if [ $bullet_row -eq $enemy_row ] && [ $bullet_col -eq $enemy_col ]
+	   then
+	       echo "(@_@) > choáng"
+		 sleep 0.40
+ 	        kill=$((kill+1))
+			db_row=$((RANDOM % rows))
+            db_col=$((RANDOM % cols))
+			enemy_row=$((RANDOM % rows))
+			enemy_col=$((RANDOM % cols))
+			hp_row=$((RANDOM % rows))
+		fi
 	   
-  *) ;;
-  esac
+		 	
+			   if [ $player_row -lt $enemy_row ]
+			   then
+			       ((enemy_row--))
+				   elif [ $player_row -gt $enemy_row ]
+				   then
+				        ((enemy_row++))
+						elif [ $player_col -lt $enemy_col ]
+						then
+						   ((enemy_col--))
+						   elif [ $player_col -gt $enemy_col ]
+						   then
+						      ((enemy_col++))
+							  
+						   fi
+				   
+				   if [ $enemy_row -eq 0 ] || [ $enemy_row -eq $dir_row ]
+				   then
+				      ((dir_row=dir_row))
+					  ((dir_col=dir_col))
+					  enemy_row=$((RANDOM % rows))
+					  enemy_col=$((RANDOM % cols))
+					  hp_row=$((RANDOM % rows))
+					elif [ $enemy_col -eq 0 ] || [ $enemy_col -eq $dir_col ]
+					then
+					   ((dir_row=dir_row))
+					  ((dir_col=dir_col))
+					  enemy_row=$((RANDOM % rows))
+					  enemy_col=$((RANDOM % cols))
+					  hp_row=$((RANDOM % rows))
+					  fi
+					
+	
+	
+	sleep 0.01s && if  [ $enemy_row -eq $player_row ] && [ $enemy_col -eq $player_col ]
+	then
+	hp=$((hp-1))
+	tput cup $player_row $player_col
+	echo "(@_@) > choáng"
+	sleep 0.40
+	db_row=$((RANDOM % rows))
+            db_col=$((RANDOM % cols))
+			hp_row=$((RANDOM % rows))
+		player_row=$((RANDOM % rows))
+		player_col=$((RANDOM % cols))
+fi
 
-  if [ $player_row -lt $attacker_row ]
-  then
-     ((attacker_row--))
-   elif [ $player_row -gt $attacker_row ]
+   if [ $db_row -eq $player_row ] && [ $db_col -eq $player_col ]
    then
-   ((attacker_row++))
-   elif [ $player_col -lt $attacker_col ]
-   then
-   ((attacker_col--))
-   elif [ $player_col -gt $attacker_col ]
-   then
-   ((attacker_col++))
-   fi
-   
-			if [ $attacker_row -eq 0 ] || [ $attacker_row -eq $dir_row ]
+   hp=$((hp-1))
+   tput cup $player_row $player_col
+       echo "(@_@) > Choáng"
+	    db_row=$((RANDOM % rows))
+            db_col=$((RANDOM % cols))
+		hp_row=$((RANDOM % rows))
+		player_row=$((RANDOM % rows))
+		player_col=$((RANDOM % cols))
+	fi
+	
+	    if [ $db_row -eq $enemy_row ] && [ $db_col -eq $enemy_col ]
+		then
+		     echo "(@_@) > choáng"
+		 sleep 0.40
+ 	        kill=$((kill+1))
+			db_row=$((RANDOM % rows))
+            db_col=$((RANDOM % cols))
+			hp_row=$((RANDOM % rows))
+			enemy_row=$((RANDOM % rows))
+			enemy_col=$((RANDOM % cols))
+			fi
+
+		if [ $hp -eq 0 ] 
+		then
+		   clear
+		    echo -e "$red
+					                                
+# #  #  # #     #    #   ## ### 
+# # # # # #     #   # # #    #  
+ #  # # # #     #   # #  #   #  
+ #  # # # #     #   # #   #  #  
+ #   #  ###     ###  #  ##   # "
+		   sleep 3
+		   break
+		 fi
+		 
+		  
+		
+			if [ $player_row -eq $hp_row ] 
 			then
-			((dir_row=dir_row))
-			((dir_col=dir_col))
-			attacker_row=$((RANDOM % rows))
-			attacker_col=$((RANDOM % cols))
-			elif [ $attacker_col -eq 0 ] || [ $attacker_row -eq $dir_col ]
+			    hp=$((hp+1))
+				hp_row=$((RANDOM % rows))
+				tput cup $hp_row $hp_col
+                 echo -e "$green($yellow+$green)"
+			elif [ $player_col -eq $hp_col ]
 			then
-			((dir_row=dir_row))
-			((dir_col=dir_col))
-			attacker_row=$((RANDOM % rows))
-			attacker_col=$((RANDOM % cols))
+			    hp=$((hp+1))
+				hp_row=$((RANDOM % rows))
+				tput cup $hp_row $hp_col
+                 echo -e "$green($yellow+$green)"
+			fi
+clear
+
+ if [ $hp -eq 1 ]
+		     then
+			 tput cup $hp 
+			     echo "Bạn Chỉ Còn Lại 1 Máu , Vui LÒNG HÒI MÀU "
 			fi
 			
-	         if [ $player_row -eq $attacker_row ] && [ $player_col -eq $attacker_col ]
-			 then
-			 tput cup $attacker_row $attacker_col
-			 echo -e "$red __(o)__"
-			 sleep 1
-			         kill=$((kill+1))
-					 attacker_row=$((RANDOM % rows))
-					 attacker_col=$((RANDOM % cols))
-			 fi
-			 
-			      if [ $bullet_row -ne $player_row ] 
-				  then
-				      ((bullet_row--))
-					 
-				   fi
-				   
-				   tput cup $bullet_row $bullet_col
-				   echo "*"
-				   
-				   if [ $bullet_row -eq $attacker_row ] && [ $bullet_col eq $attacker_col ]
-				   then
-				   tput cup $attacker_row $attacker_col
-				   echo -e "$red __(o)__"
-				   sleep 1
-				       kill=$((kill+1))
-					   attacker_row=$((RANDOM % rows))
-					   attacker_col=$((RANDOM % cols))
-					  
-					   
-					fi
-					
-					if [ $attacker_row -eq $player_row ] && [ $attacker_col -eq $player_col ]
-					then
-					         clear 
-			        echo -e "$red
-					                                
-# #  #  # #     #    #   ## ### 
-# # # # # #     #   # # #    #  
- #  # # # #     #   # #  #   #  
- #  # # # #     #   # #   #  #  
- #   #  ###     ###  #  ##   # 
- 
- [ Bạn Đã Bị Bắt Cóc ]
- [ Số Điểm Của Bạn Hiện Tại : $score/50 ] "
- sleep 3
-      break
-	         fi
-					
-			
-if [ $player_row -eq $target_row ]
-then
-   socre=$((score+1))
-   target_row=$((rANDOM % rows))
-   target_col=$((RANDOM % cols))
-			
-   
-   elif [ $player_col -eq $target_col ]
-   then
-   score=$((score+1))
-   target_row=$((RANDOM % rows))
-   target_col=$((RANDOM % cols))
-   fi
-	
-	if [ $x -eq $attacker_row ] && [ $x -eq $attacker_col ]
-	then
-	        kill=$((kill+1))
-			 target_row=$((RANDOM % rows))
-   target_col=$((RANDOM % cols))
-   fi
-   
-   if [ $x -eq $player_row ] && [ $x -eq $player_col ]
-   then
-       					         clear 
-			        echo -e "$red
-					                                
-# #  #  # #     #    #   ## ### 
-# # # # # #     #   # # #    #  
- #  # # # #     #   # #  #   #  
- #  # # # #     #   # #   #  #  
- #   #  ###     ###  #  ##   # 
- 
- [ Bạn Đã Bị Bắt Cóc ]
- [ Số Điểm Của Bạn Hiện Tại : $score/50 ] "
- sleep 3
-      break
-	  fi
-	  
-   clear
-   for i in "${!x[@]}"
-do
-    obstacle=(${x[$i]})
-    tput cup ${x[0]} ${x[1]}
-    echo "#"
-done
-echo ""
+for i in {1..5}
+     do
+db_row=$((RANDOM % rows))
+db_col=$((RANDOM % cols))
+		 tput cup $db_row $db_col
+         echo -e "$red(')"
+	done
 tput cup $player_row $player_col
-echo -e "$green Bạn > (@) "
-tput cup $target_row $target_col
-echo -e "$yellow Mục Tiêu > (***)"
-tput cup $attacker_row $attacker_col
-echo -e "$red Kẻ Bắt Cóc > (o)"
-tput cup $bullet_row $bullet_col
-echo "*"
-   tput cup $x 
-    echo "#"
-tput cup $score 0
-echo -e "$white Số Mục Tiêu Bạn Đã Lấy Được : $score"
+echo -e "$green /(~_~)-|"
+tput cup $enemy_row $enemy_col
+echo -e "$yellow /('_')-|"
+tput cup $hp_row $hp_col
+ echo -e "$green($yellow+$green)"
 tput cup $kill 0
-echo -e "$white KILL :$red $kill$white"
+echo -e "$white KILL :$red $kill"
+tput cup $hp 0
+echo ""
+echo -e "$white Máu [$green $hp$white ]"
 
 done
-
 tput cnorm
-
 }
 
-   while true; do
-   clear
-   echo -e "$red
-  __  ___ ______ ______    _____          __  __ ______ 
- /_ |/ _ \____  |____  |  / ____|   /\   |  \/  |  ____|
-  | | (_) |  / /    / /  | |  __   /  \  | \  / | |__   
-  | |> _ <  / /    / /   | | |_ | / /\ \ | |\/| |  __|  
-  | | (_) |/ /    / /    | |__| |/ ____ \| |  | | |____ 
-  |_|\___//_/    /_/      \_____/_/    \_\_|  |_|______|
-                                                        
-                                                        
-	trò chơi dựa trên một câu chuyện cô bé khăn quàng đỏ
-	
-	            người xuất bản : Phạm Chiến
-				Bản Quyền Thuộc NGười Xuất Bản "
-	
-   echo -e "$yellow"
-   echo "press [ A ] to start new game"
-   echo -e "$white"
-echo "============================"
-echo "nhấn phím W để đi lên"
-echo "nhấn phím S để đi lùi"
-echo "nhấn phím A để đi sang trái"
-echo "nhấn phím D để đi sang phải"
-echo "Nhấn phím Cách để bắn "
-echo "============================"
-   read -s -n 1 menu
-   case $menu in
-   "a") 1877_game ;;
-   "A") 1877_game ;;
-   *) ;;
-   esac
-   done
-   
+last
